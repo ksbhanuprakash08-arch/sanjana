@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoGuard - Encryption & Hashing Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #667eea;
+        }
+        
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .output-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .output-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .output-text {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            border: 1px solid #e0e0e0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            color: #27ae60;
+            border-left-color: #27ae60;
+        }
+        
+        .error {
+            color: #e74c3c;
+            border-left-color: #e74c3c;
+        }
+        
+        .copy-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+            }
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .doc-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .doc-section h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .doc-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .doc-section ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .doc-section li {
+            margin-bottom: 8px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table th {
+            font-weight: 600;
+            border-bottom: 2px solid #555;
+        }
+        
+        .comparison-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .comparison-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card .value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <marquee style="background: #667eea; color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-weight: 600;">
+            Created by Sajana
+        </marquee>
+        
+        <h1>Secure Data Encryption and Decryption Tool Using AES and RSA</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('project')">📋 Project Info</button>
+            <button class="tab-btn" onclick="switchTab('aes')">AES Encryption</button>
+            <button class="tab-btn" onclick="switchTab('rsa')">RSA Encryption</button>
+            <button class="tab-btn" onclick="switchTab('hash')">SHA-256 Hashing</button>
+            <button class="tab-btn" onclick="switchTab('comparison')">📊 Comparison</button>
+        </div>
+        
+        <!-- Project Info Tab -->
+        <div id="project" class="tab-content active">
+            <h2>📋 Project Documentation</h2>
+            
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 id="project-title" style="color: #667eea; margin-bottom: 15px;"></h3>
+                
+                <div class="doc-section">
+                    <h4>Abstract</h4>
+                    <p id="project-abstract"></p>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Problem Statement</h4>
+                    <p id="project-problem"></p>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Primary Objectives</h4>
+                    <ul id="project-objectives-primary"></ul>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Scope of Project</h4>
+                    <ul id="project-scope"></ul>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Technologies Used</h4>
+                    <table id="tech-table" style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #f5f5f5;">
+                            <td style="padding: 10px; border: 1px solid #e0e0e0; font-weight: bold;">Component</td>
+                            <td style="padding: 10px; border: 1px solid #e0e0e0; font-weight: bold;">Technology</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Advantages</h4>
+                    <ul id="project-advantages"></ul>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Limitations</h4>
+                    <ul id="project-limitations"></ul>
+                </div>
+                
+                <div class="doc-section">
+                    <h4>Future Enhancements</h4>
+                    <ul id="project-future"></ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AES Tab -->
+        <div id="aes" class="tab-content">
+            <div class="status" id="aes-status"></div>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="mode-btn" onclick="switchAESMode('text')" id="aes-text-btn" style="background: #667eea; color: white;">📝 Text Mode</button>
+                <button class="mode-btn" onclick="switchAESMode('file')" id="aes-file-btn">📁 File Mode</button>
+            </div>
+            
+            <!-- Text Mode -->
+            <div id="aes-text-mode" style="display: block;">
+                <div class="two-column">
+                    <div>
+                        <h2>Encrypt with AES</h2>
+                        <div class="form-group">
+                            <label for="aes-message">Message to Encrypt:</label>
+                            <textarea id="aes-message" placeholder="Enter your message here..."></textarea>
+                        </div>
+                        <button onclick="aesEncrypt()">🔒 Encrypt</button>
+                        <div id="aes-encrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                    
+                    <div>
+                        <h2>Decrypt with AES</h2>
+                        <div class="form-group">
+                            <label for="aes-ciphertext">Ciphertext (Base64):</label>
+                            <textarea id="aes-ciphertext" placeholder="Paste encrypted text here..."></textarea>
+                        </div>
+                        <button onclick="aesDecrypt()">🔓 Decrypt</button>
+                        <div id="aes-decrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Mode -->
+            <div id="aes-file-mode" style="display: none;">
+                <div class="two-column">
+                    <div>
+                        <h2>Encrypt File with AES</h2>
+                        <div class="form-group">
+                            <label for="aes-file">Select File:</label>
+                            <input type="file" id="aes-file" />
+                        </div>
+                        <button onclick="aesEncryptFile()">🔒 Encrypt File</button>
+                        <div id="aes-file-encrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                    
+                    <div>
+                        <h2>Decrypt File with AES</h2>
+                        <div class="form-group">
+                            <label for="aes-file-ciphertext">Encrypted Data (Base64):</label>
+                            <textarea id="aes-file-ciphertext" placeholder="Paste encrypted file data here..."></textarea>
+                        </div>
+                        <button onclick="aesDecryptFile()">🔓 Decrypt File</button>
+                        <div id="aes-file-decrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="aes-output"></div>
+        </div>
+        
+        <!-- RSA Tab -->
+        <div id="rsa" class="tab-content">
+            <div class="status" id="rsa-status"></div>
+            
+            <div class="form-group">
+                <button onclick="rsaGenerate()">🔑 Generate RSA Keys</button>
+                <div id="rsa-keygen-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="mode-btn" onclick="switchRSAMode('text')" id="rsa-text-btn" style="background: #667eea; color: white;">📝 Text Mode</button>
+                <button class="mode-btn" onclick="switchRSAMode('file')" id="rsa-file-btn">📁 File Mode</button>
+            </div>
+            
+            <!-- Text Mode -->
+            <div id="rsa-text-mode" style="display: block;">
+                <div class="two-column">
+                    <div>
+                        <h2>Encrypt with RSA</h2>
+                        <div class="form-group">
+                            <label for="rsa-message">Message to Encrypt:</label>
+                            <textarea id="rsa-message" placeholder="Enter your message here..."></textarea>
+                        </div>
+                        <button onclick="rsaEncrypt()">🔒 Encrypt</button>
+                        <div id="rsa-encrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                    
+                    <div>
+                        <h2>Decrypt with RSA</h2>
+                        <div class="form-group">
+                            <label for="rsa-ciphertext">Ciphertext (Base64):</label>
+                            <textarea id="rsa-ciphertext" placeholder="Paste encrypted text here..."></textarea>
+                        </div>
+                        <button onclick="rsaDecrypt()">🔓 Decrypt</button>
+                        <div id="rsa-decrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Mode -->
+            <div id="rsa-file-mode" style="display: none;">
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                    <strong>⚠️ Note:</strong> RSA is not recommended for large files. For better performance with large files, use AES encryption.
+                </div>
+                <div class="two-column">
+                    <div>
+                        <h2>Encrypt File with RSA</h2>
+                        <div class="form-group">
+                            <label for="rsa-file">Select Small File:</label>
+                            <input type="file" id="rsa-file" />
+                        </div>
+                        <button onclick="rsaEncryptFile()">🔒 Encrypt File</button>
+                        <div id="rsa-file-encrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                    
+                    <div>
+                        <h2>Decrypt File with RSA</h2>
+                        <div class="form-group">
+                            <label for="rsa-file-ciphertext">Encrypted Data (Base64):</label>
+                            <textarea id="rsa-file-ciphertext" placeholder="Paste encrypted file data here..."></textarea>
+                        </div>
+                        <button onclick="rsaDecryptFile()">🔓 Decrypt File</button>
+                        <div id="rsa-file-decrypt-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="rsa-output"></div>
+        </div>
+        
+        <!-- Hash Tab -->
+        <div id="hash" class="tab-content">
+            <div class="status" id="hash-status"></div>
+            
+            <div class="form-group">
+                <label for="hash-message">Message to Hash:</label>
+                <textarea id="hash-message" placeholder="Enter your message here..."></textarea>
+            </div>
+            <button onclick="hashData()">🔗 Generate SHA-256 Hash</button>
+            <div id="hash-time" style="margin-top: 10px; color: #667eea; font-weight: 600;"></div>
+            
+            <div id="hash-output"></div>
+        </div>
+        
+        <!-- Comparison Tab -->
+        <div id="comparison" class="tab-content">
+            <h2>📊 AES vs RSA Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>AES</th>
+                        <th>RSA</th>
+                    </tr>
+                </thead>
+                <tbody id="comparison-tbody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 20px;">Loading comparison data...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 30px;">
+                <h3>Performance Metrics from Your Operations</h3>
+                <div id="performance-metrics" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;"></div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                <h3>Key Insights</h3>
+                <ul style="line-height: 1.8;">
+                    <li><strong>AES (Symmetric)</strong>: Best for encrypting large files and data. Uses same key for encryption and decryption.</li>
+                    <li><strong>RSA (Asymmetric)</strong>: Best for secure key exchange and digital signatures. Uses public key to encrypt and private key to decrypt.</li>
+                    <li><strong>Hybrid Approach</strong>: Use RSA to securely exchange AES keys, then use AES for bulk encryption - combines security of RSA with speed of AES.</li>
+                    <li><strong>Speed Trade-off</strong>: RSA is slower but provides asymmetric security. AES is faster for large data.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Load project info on page load
+        window.addEventListener('load', function() {
+            loadProjectInfo();
+            loadComparison();
+        });
+        
+        function loadProjectInfo() {
+            fetch('/api/project-info')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('project-title').textContent = data.title;
+                    document.getElementById('project-abstract').textContent = data.abstract;
+                    document.getElementById('project-problem').textContent = data.problem_statement;
+                    
+                    let primaryObjList = document.getElementById('project-objectives-primary');
+                    data.objectives.primary.forEach(obj => {
+                        let li = document.createElement('li');
+                        li.textContent = obj;
+                        primaryObjList.appendChild(li);
+                    });
+                    
+                    let scopeList = document.getElementById('project-scope');
+                    data.scope.forEach(item => {
+                        let li = document.createElement('li');
+                        li.textContent = item;
+                        scopeList.appendChild(li);
+                    });
+                    
+                    let techTable = document.getElementById('tech-table');
+                    const tech = data.technologies;
+                    techTable.innerHTML += `
+                        <tr><td style="padding: 10px; border: 1px solid #e0e0e0;">Programming Language</td><td style="padding: 10px; border: 1px solid #e0e0e0;">${tech.programming}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #e0e0e0;">Web Framework</td><td style="padding: 10px; border: 1px solid #e0e0e0;">${tech.web_framework}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #e0e0e0;">AES Encryption</td><td style="padding: 10px; border: 1px solid #e0e0e0;">${tech.aes_encryption}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #e0e0e0;">RSA Encryption</td><td style="padding: 10px; border: 1px solid #e0e0e0;">${tech.rsa_encryption}</td></tr>
+                        <tr><td style="padding: 10px; border: 1px solid #e0e0e0;">Frontend</td><td style="padding: 10px; border: 1px solid #e0e0e0;">${tech.frontend}</td></tr>
+                    `;
+                    
+                    let advList = document.getElementById('project-advantages');
+                    data.advantages.forEach(adv => {
+                        let li = document.createElement('li');
+                        li.textContent = adv;
+                        advList.appendChild(li);
+                    });
+                    
+                    let limList = document.getElementById('project-limitations');
+                    data.limitations.forEach(lim => {
+                        let li = document.createElement('li');
+                        li.textContent = lim;
+                        limList.appendChild(li);
+                    });
+                    
+                    let futureList = document.getElementById('project-future');
+                    data.future_enhancements.forEach(enh => {
+                        let li = document.createElement('li');
+                        li.textContent = enh;
+                        futureList.appendChild(li);
+                    });
+                });
+        }
+        
+        function loadComparison() {
+            fetch('/api/comparison')
+                .then(r => r.json())
+                .then(data => {
+                    let tbody = document.getElementById('comparison-tbody');
+                    tbody.innerHTML = '';
+                    
+                    const params = ['name', 'type', 'encryption_speed', 'decryption_speed', 'security', 'key_management', 'file_encryption', 'message_encryption', 'key_size'];
+                    const labels = ['Algorithm', 'Type', 'Encryption Speed', 'Decryption Speed', 'Security Level', 'Key Management', 'File Encryption', 'Message Encryption', 'Key Size'];
+                    
+                    for (let i = 0; i < params.length; i++) {
+                        let row = document.createElement('tr');
+                        let aesVal = data.algorithms[0][params[i]];
+                        let rsaVal = data.algorithms[1][params[i]];
+                        row.innerHTML = `
+                            <td><strong>${labels[i]}</strong></td>
+                            <td>${aesVal}</td>
+                            <td>${rsaVal}</td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+                });
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        function switchAESMode(mode) {
+            document.getElementById('aes-text-mode').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('aes-file-mode').style.display = mode === 'file' ? 'block' : 'none';
+            
+            document.getElementById('aes-text-btn').style.background = mode === 'text' ? '#667eea' : 'white';
+            document.getElementById('aes-text-btn').style.color = mode === 'text' ? 'white' : '#667eea';
+            document.getElementById('aes-file-btn').style.background = mode === 'file' ? '#667eea' : 'white';
+            document.getElementById('aes-file-btn').style.color = mode === 'file' ? 'white' : '#667eea';
+        }
+        
+        function switchRSAMode(mode) {
+            document.getElementById('rsa-text-mode').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('rsa-file-mode').style.display = mode === 'file' ? 'block' : 'none';
+            
+            document.getElementById('rsa-text-btn').style.background = mode === 'text' ? '#667eea' : 'white';
+            document.getElementById('rsa-text-btn').style.color = mode === 'text' ? 'white' : '#667eea';
+            document.getElementById('rsa-file-btn').style.background = mode === 'file' ? '#667eea' : 'white';
+            document.getElementById('rsa-file-btn').style.color = mode === 'file' ? 'white' : '#667eea';
+        }
+        
+        function showStatus(type, message, statusId) {
+            const status = document.getElementById(statusId);
+            status.textContent = message;
+            status.className = `status show ${type}`;
+            setTimeout(() => status.classList.remove('show'), 5000);
+        }
+        
+        function aesEncrypt() {
+            const message = document.getElementById('aes-message').value;
+            if (!message) {
+                showStatus('error', 'Please enter a message', 'aes-status');
+                return;
+            }
+            
+            fetch('/api/aes/encrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('aes-ciphertext').value = data.ciphertext;
+                    document.getElementById('aes-encrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('aes-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ Encrypted Successfully</div>
+                            <div class="output-label">Key (Base64):</div>
+                            <div class="output-text">${data.key}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.key}')">Copy Key</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'aes-status');
+                }
+            });
+        }
+        
+        function aesDecrypt() {
+            const ciphertext = document.getElementById('aes-ciphertext').value;
+            if (!ciphertext) {
+                showStatus('error', 'Please enter ciphertext', 'aes-status');
+                return;
+            }
+            
+            fetch('/api/aes/decrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ciphertext})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('aes-decrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('aes-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ Decrypted Successfully</div>
+                            <div class="output-label">Plaintext:</div>
+                            <div class="output-text">${data.plaintext}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.plaintext}')">Copy</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'aes-status');
+                }
+            });
+        }
+        
+        function aesEncryptFile() {
+            const file = document.getElementById('aes-file').files[0];
+            if (!file) {
+                showStatus('error', 'Please select a file', 'aes-status');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/api/aes/encrypt-file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('aes-file-ciphertext').value = data.ciphertext;
+                    document.getElementById('aes-file-encrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('aes-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ File Encrypted Successfully</div>
+                            <div class="output-label">Filename: ${data.filename}</div>
+                            <div class="output-label">Key (Base64):</div>
+                            <div class="output-text">${data.key}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.key}')">Copy Key</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'aes-status');
+                }
+            });
+        }
+        
+        function aesDecryptFile() {
+            const ciphertext = document.getElementById('aes-file-ciphertext').value;
+            if (!ciphertext) {
+                showStatus('error', 'Please enter encrypted data', 'aes-status');
+                return;
+            }
+            
+            fetch('/api/aes/decrypt-file', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ciphertext})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('aes-file-decrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('aes-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ File Decrypted Successfully</div>
+                            <div class="output-label">Decrypted Data (Base64):</div>
+                            <div class="output-text" style="word-break: break-all;">${data.data.substring(0, 200)}${data.data.length > 200 ? '...' : ''}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.data}')">Copy Data</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'aes-status');
+                }
+            });
+        }
+        
+        function rsaGenerate() {
+            fetch('/api/rsa/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('rsa-keygen-time').textContent = `⏱️ Time: ${data.time}`;
+                    showStatus('success', 'RSA keys generated successfully!', 'rsa-status');
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'rsa-status');
+                }
+            });
+        }
+        
+        function rsaEncrypt() {
+            const message = document.getElementById('rsa-message').value;
+            if (!message) {
+                showStatus('error', 'Please enter a message', 'rsa-status');
+                return;
+            }
+            
+            fetch('/api/rsa/encrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('rsa-ciphertext').value = data.ciphertext;
+                    document.getElementById('rsa-encrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('rsa-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ Encrypted Successfully</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.ciphertext}')">Copy</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'rsa-status');
+                }
+            });
+        }
+        
+        function rsaDecrypt() {
+            const ciphertext = document.getElementById('rsa-ciphertext').value;
+            if (!ciphertext) {
+                showStatus('error', 'Please enter ciphertext', 'rsa-status');
+                return;
+            }
+            
+            fetch('/api/rsa/decrypt', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ciphertext})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('rsa-decrypt-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('rsa-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ Decrypted Successfully</div>
+                            <div class="output-label">Plaintext:</div>
+                            <div class="output-text">${data.plaintext}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.plaintext}')">Copy</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'rsa-status');
+                }
+            });
+        }
+        
+        function hashData() {
+            const message = document.getElementById('hash-message').value;
+            if (!message) {
+                showStatus('error', 'Please enter a message', 'hash-status');
+                return;
+            }
+            
+            fetch('/api/hash', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('hash-time').textContent = `⏱️ Time: ${data.time}`;
+                    document.getElementById('hash-output').innerHTML = `
+                        <div class="output-section success">
+                            <div class="output-label">✓ Hash Generated Successfully</div>
+                            <div class="output-label">SHA-256 Hash:</div>
+                            <div class="output-text">${data.hash}</div>
+                            <button class="copy-btn" onclick="copyToClipboard('${data.hash}')">Copy Hash</button>
+                        </div>
+                    `;
+                } else {
+                    showStatus('error', 'Error: ' + data.error, 'hash-status');
+                }
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
